@@ -1,0 +1,76 @@
+import React from 'react';
+import Link from 'next/link';
+import { ShieldCheck, Lock, Eye, FileCheck2 } from 'lucide-react';
+
+export default function SecurityPage() {
+  return (
+    <div className="min-h-screen bg-[#030712] text-slate-100 font-sans antialiased">
+      <div className="max-w-[1200px] mx-auto px-6 sm:px-10 lg:px-16 py-12">
+        <nav className="flex items-center justify-between mb-16">
+          <Link className="flex items-center gap-3" href="/">
+            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-bold shadow-lg shadow-blue-500/20">A</div>
+            <span className="font-bold text-xl tracking-tight">AccessPro</span>
+          </Link>
+          <div className="flex items-center gap-6 text-sm font-medium text-slate-400">
+            <Link className="hover:text-white transition-colors" href="/features">Features</Link>
+            <Link className="hover:text-white transition-colors" href="/workflow">Workflow</Link>
+            <Link className="hover:text-white transition-colors" href="/pricing">Pricing</Link>
+            <Link className="hover:text-white transition-colors" href="/contact">Contact</Link>
+          </div>
+        </nav>
+
+        <header className="mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold text-emerald-300 mb-4">
+            Security & compliance
+          </div>
+          <h1 className="text-4xl md:text-6xl font-black leading-tight">Security is built into every scan.</h1>
+          <p className="text-slate-400 mt-4 max-w-2xl text-lg leading-relaxed">
+            AccessPro uses enterprise-grade controls so guest data stays protected, auditable, and compliant across every event.
+          </p>
+        </header>
+
+        <section className="grid md:grid-cols-2 gap-8">
+          {[
+            {
+              title: 'Encryption everywhere',
+              desc: 'AES-256 encryption at rest and TLS 1.2+ in transit across all systems.',
+              icon: <Lock />,
+            },
+            {
+              title: 'Access controls',
+              desc: 'Role-based permissions and device-level check-in restrictions.',
+              icon: <ShieldCheck />,
+            },
+            {
+              title: 'Audit visibility',
+              desc: 'Full activity logs for guest scans, staff changes, and data exports.',
+              icon: <Eye />,
+            },
+            {
+              title: 'Compliance ready',
+              desc: 'GDPR-ready data handling and secure retention policies.',
+              icon: <FileCheck2 />,
+            },
+          ].map((item) => (
+            <div key={item.title} className="p-7 bg-slate-900/50 border border-slate-800 rounded-[2rem]">
+              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-300 flex items-center justify-center mb-6">
+                {item.icon}
+              </div>
+              <h3 className="font-bold text-lg mb-2">{item.title}</h3>
+              <p className="text-sm text-slate-500 leading-relaxed">{item.desc}</p>
+            </div>
+          ))}
+        </section>
+
+        <section className="mt-16 bg-slate-900/60 border border-slate-800 rounded-[2.5rem] p-10 md:p-14">
+          <h2 className="text-2xl font-black mb-4">Security commitments</h2>
+          <div className="grid md:grid-cols-3 gap-4 text-sm text-slate-400">
+            <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3">99.9% uptime SLA for enterprise plans</div>
+            <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3">Quarterly penetration testing reviews</div>
+            <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3">Dedicated incident response coverage</div>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}

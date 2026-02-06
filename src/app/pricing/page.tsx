@@ -1,0 +1,98 @@
+import React from 'react';
+import Link from 'next/link';
+import { CheckCircle2, ArrowRight } from 'lucide-react';
+
+export default function PricingPage() {
+  return (
+    <div className="min-h-screen bg-[#030712] text-slate-100 font-sans antialiased">
+      <div className="max-w-[1200px] mx-auto px-6 sm:px-10 lg:px-16 py-12">
+        <nav className="flex items-center justify-between mb-16">
+          <Link className="flex items-center gap-3" href="/">
+            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-bold shadow-lg shadow-blue-500/20">A</div>
+            <span className="font-bold text-xl tracking-tight">AccessPro</span>
+          </Link>
+          <div className="flex items-center gap-6 text-sm font-medium text-slate-400">
+            <Link className="hover:text-white transition-colors" href="/features">Features</Link>
+            <Link className="hover:text-white transition-colors" href="/workflow">Workflow</Link>
+            <Link className="hover:text-white transition-colors" href="/security">Security</Link>
+            <Link className="hover:text-white transition-colors" href="/contact">Contact</Link>
+          </div>
+        </nav>
+
+        <header className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-semibold text-blue-400 mb-4">
+            Pricing
+          </div>
+          <h1 className="text-4xl md:text-6xl font-black leading-tight">Plans that scale with your events.</h1>
+          <p className="text-slate-400 mt-4 max-w-2xl mx-auto text-lg leading-relaxed">
+            Choose a plan that matches your audience size, support needs, and analytics depth.
+          </p>
+        </header>
+
+        <section className="grid lg:grid-cols-3 gap-8">
+          {[
+            {
+              title: 'Starter',
+              price: '$0',
+              desc: 'Perfect for small events and pilots.',
+              features: ['Up to 300 guests', 'Single venue check-in', 'Basic analytics', 'Email support'],
+            },
+            {
+              title: 'Growth',
+              price: '$249',
+              desc: 'For teams running recurring events.',
+              features: ['Up to 5,000 guests', 'Multi-lane scanning', 'Automations & reminders', 'CSV exports'],
+              highlight: true,
+            },
+            {
+              title: 'Enterprise',
+              price: 'Custom',
+              desc: 'High-volume events and enterprise controls.',
+              features: ['Unlimited guests', 'Dedicated success team', 'SSO & advanced security', 'SLA + 24/7 support'],
+            },
+          ].map((tier) => (
+            <div
+              key={tier.title}
+              className={`p-8 rounded-[2rem] border ${
+                tier.highlight ? 'bg-blue-600/10 border-blue-500/50' : 'bg-slate-900/50 border-slate-800'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-bold">{tier.title}</h3>
+                {tier.highlight && (
+                  <span className="text-[10px] uppercase tracking-widest font-black text-blue-300 bg-blue-500/20 px-2 py-1 rounded-md">
+                    Most popular
+                  </span>
+                )}
+              </div>
+              <div className="text-4xl font-black mb-2">{tier.price}</div>
+              <p className="text-sm text-slate-400 mb-6">{tier.desc}</p>
+              <div className="space-y-3 text-sm text-slate-400 mb-8">
+                {tier.features.map((feature) => (
+                  <div key={feature} className="flex items-center gap-3">
+                    <CheckCircle2 size={16} className="text-emerald-400" />
+                    {feature}
+                  </div>
+                ))}
+              </div>
+              <Link
+                className={`w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl font-semibold ${
+                  tier.highlight
+                    ? 'bg-blue-600 hover:bg-blue-500 text-white'
+                    : 'bg-slate-800 hover:bg-slate-700 text-white'
+                }`}
+                href="/contact"
+              >
+                Talk to sales <ArrowRight size={14} />
+              </Link>
+            </div>
+          ))}
+        </section>
+
+        <section className="mt-16 text-center text-sm text-slate-500">
+          All plans include GDPR-ready data handling, unlimited staff users, and standard reporting.
+        </section>
+      </div>
+    </div>
+  );
+}
