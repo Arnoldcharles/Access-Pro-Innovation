@@ -77,10 +77,6 @@ export default function OrgDashboardPage() {
       }
 
       setOrg(orgSnap.data() as OrgData);
-      if (userData?.orgSlug && userData.orgSlug !== slug) {
-        router.replace(`/${userData.orgSlug}`);
-        return;
-      }
 
       setLoading(false);
       setEventsLoading(true);
