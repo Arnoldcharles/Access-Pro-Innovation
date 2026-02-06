@@ -26,6 +26,15 @@ type EventData = {
   peakStart?: string;
   peakEnd?: string;
   avgScanSeconds?: number;
+  imageDataUrl?: string;
+  qrX?: number;
+  qrY?: number;
+  qrSize?: number;
+  nameX?: number;
+  nameY?: number;
+  nameColor?: string;
+  nameSize?: number;
+  nameFont?: string;
   status?: string;
 };
 
@@ -77,6 +86,9 @@ export default function EventDashboardPage() {
   const [inviteLink, setInviteLink] = useState('');
   const [inviteLoading, setInviteLoading] = useState(false);
   const [inviteStatus, setInviteStatus] = useState('');
+  const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
+  const [cardOpen, setCardOpen] = useState(false);
+  const [cardGuest, setCardGuest] = useState<Guest | null>(null);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
@@ -226,6 +238,12 @@ export default function EventDashboardPage() {
     setInviteLink('');
     setInviteStatus('');
     setInviteOpen(true);
+  };
+
+  const openGuestCard = (guest: Guest) => {
+    setCardGuest(guest);
+    setCardOpen(true);
+    setMenuOpenId(null);
   };
 
   const closeInviteModal = () => {
@@ -646,38 +664,59 @@ export default function EventDashboardPage() {
                           <div className="text-slate-400">{guest.phone || 'No phone'}</div>
                           <div className="flex items-center justify-between gap-3">
                             <span className="text-slate-400">{guest.email || 'No email'}</span>
-                            <div className="flex items-center gap-3 text-sm">
-                              {!isPending ? (
-                                <button
-                                  type="button"
-                                  className="text-blue-400 hover:text-blue-300"
-                                  onClick={() => startEdit(guest)}
-                                >
-                                  Edit
-                                </button>
-                              ) : null}
-                              {!isPending ? (
-                                <button
-                                  type="button"
-                                  className="text-emerald-400 hover:text-emerald-300"
-                                  onClick={() =>
-                                    openInviteModal('single', {
-                                      name: guest.name,
-                                      phone: guest.phone,
-                                      email: guest.email,
-                                    })
-                                  }
-                                >
-                                  Invite
-                                </button>
-                              ) : null}
+                            <div className="relative">
                               <button
                                 type="button"
-                                className="text-red-400 hover:text-red-300"
-                                onClick={() => handleDeleteGuest(guest, index)}
+                                className="px-2 py-1 rounded-full border border-slate-200 text-slate-600 hover:text-slate-900"
+                                onClick={() => setMenuOpenId((prev) => (prev === guest.id ? null : guest.id ?? null))}
                               >
-                                Delete
+                                ⋮
                               </button>
+                              {menuOpenId === guest.id ? (
+                                <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg text-sm z-10">
+                                  {!isPending ? (
+                                    <button
+                                      type="button"
+                                      className="w-full text-left px-4 py-2 hover:bg-slate-50"
+                                      onClick={() =>
+                                        openInviteModal('single', {
+                                          name: guest.name,
+                                          phone: guest.phone,
+                                          email: guest.email,
+                                        })
+                                      }
+                                    >
+                                      Invite guest
+                                    </button>
+                                  ) : null}
+                                  {!isPending ? (
+                                    <button
+                                      type="button"
+                                      className="w-full text-left px-4 py-2 hover:bg-slate-50"
+                                      onClick={() => openGuestCard(guest)}
+                                    >
+                                      View guest image card
+                                    </button>
+                                  ) : null}
+                                  {!isPending ? (
+                                    <button
+                                      type="button"
+                                      className="w-full text-left px-4 py-2 hover:bg-slate-50"
+                                      onClick={() => startEdit(guest)}
+                                    >
+                                      Edit guest
+                                    </button>
+                                  ) : null}
+                                  <button
+                                    type="button"
+                                    className="w-full text-left px-4 py-2 hover:bg-slate-50 text-red-500"
+                                    onClick={() => handleDeleteGuest(guest, index)}
+                                  >
+                                    Delete guest
+                                  </button>
+                                  <div className="px-4 py-2 text-xs text-slate-400">More options coming soon</div>
+                                </div>
+                              ) : null}
                             </div>
                           </div>
                         </div>
@@ -788,6 +827,88 @@ export default function EventDashboardPage() {
                   >
                     {inviteLoading ? 'Sending...' : 'Send WhatsApp invite'}
                   </button>
+                </div>
+              </motion.section>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {cardOpen && cardGuest ? (
+            <motion.div
+              className="fixed inset-0 z-50 flex items-center justify-center px-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <motion.button
+                type="button"
+                aria-label="Close"
+                className="absolute inset-0 bg-black/70"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setCardOpen(false)}
+              />
+              <motion.section
+                initial={{ opacity: 0, y: 20, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1, transition: { duration: 0.3, ease: easeOut } }}
+                exit={{ opacity: 0, y: 10, scale: 0.98, transition: { duration: 0.2 } }}
+                className="relative z-10 w-full max-w-[520px] bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-2xl"
+              >
+                <div className="flex items-start justify-between gap-4 mb-4">
+                  <div>
+                    <h2 className="text-lg font-bold mb-1">Guest image card</h2>
+                    <p className="text-sm text-slate-600">
+                      {cardGuest.name} - {eventData?.name ?? ''}
+                    </p>
+                  </div>
+                  <button type="button" className="text-sm text-slate-500 hover:text-slate-900" onClick={() => setCardOpen(false)}>
+                    Close
+                  </button>
+                </div>
+                <div className="border border-slate-200 rounded-2xl overflow-hidden">
+                  <div className="relative w-full h-64 bg-slate-50">
+                    {eventData?.imageDataUrl ? (
+                      <img src={eventData.imageDataUrl} alt="Guest card" className="absolute inset-0 w-full h-full object-cover" />
+                    ) : null}
+                    <div
+                      className="absolute"
+                      style={{
+                        left: `${(eventData?.qrX ?? 0.1) * 100}%`,
+                        top: `${(eventData?.qrY ?? 0.1) * 100}%`,
+                        transform: 'translate(-50%, -50%)',
+                        width: eventData?.qrSize ?? 96,
+                        height: eventData?.qrSize ?? 96,
+                      }}
+                    >
+                      <img
+                        alt="QR code"
+                        className="w-full h-full object-cover rounded-xl border border-slate-200 bg-white"
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(
+                          `${cardGuest.name}|${params.org}/${params.event}`
+                        )}`}
+                      />
+                    </div>
+                    <div
+                      className="absolute px-3 py-2 rounded-xl bg-white/90 border border-slate-200 shadow text-sm font-semibold"
+                      style={{
+                        left: `${(eventData?.nameX ?? 0.1) * 100}%`,
+                        top: `${(eventData?.nameY ?? 0.3) * 100}%`,
+                        transform: 'translate(-50%, -50%)',
+                        color: eventData?.nameColor ?? '#111827',
+                        fontSize: `${eventData?.nameSize ?? 16}px`,
+                        fontFamily: eventData?.nameFont ?? 'Arial, sans-serif',
+                      }}
+                    >
+                      {cardGuest.name}
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4 text-sm text-slate-600">
+                  <div className="font-semibold">{cardGuest.name}</div>
+                  <div>{cardGuest.email}</div>
+                  <div>{cardGuest.phone}</div>
                 </div>
               </motion.section>
             </motion.div>

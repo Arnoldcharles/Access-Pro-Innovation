@@ -2,8 +2,8 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { motion, cubicBezier } from 'framer-motion';
+import { useParams, useRouter } from 'next/navigation';
+import { AnimatePresence, motion, cubicBezier } from 'framer-motion';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
@@ -11,12 +11,16 @@ type DesignData = {
   imageDataUrl?: string;
   qrX?: number;
   qrY?: number;
+  qrSize?: number;
   nameX?: number;
   nameY?: number;
   nameColor?: string;
+  nameSize?: number;
+  nameFont?: string;
 };
 
 export default function EventDesignPage() {
+  const router = useRouter();
   const params = useParams<{ org: string; event: string }>();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -25,9 +29,13 @@ export default function EventDesignPage() {
   const [eventLocation, setEventLocation] = useState('');
   const [imageDataUrl, setImageDataUrl] = useState<string>('');
   const [qrPos, setQrPos] = useState({ x: 0.1, y: 0.1 });
+  const [qrSize, setQrSize] = useState(96);
   const [namePos, setNamePos] = useState({ x: 0.1, y: 0.3 });
   const [nameColor, setNameColor] = useState('#111827');
+  const [nameSize, setNameSize] = useState(16);
+  const [nameFont, setNameFont] = useState('Arial, sans-serif');
   const [dragging, setDragging] = useState<'qr' | 'name' | null>(null);
+  const [transitioning, setTransitioning] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -43,8 +51,11 @@ export default function EventDesignPage() {
         setEventLocation(data.location ?? '');
         if (data.imageDataUrl) setImageDataUrl(data.imageDataUrl);
         if (typeof data.qrX === 'number' && typeof data.qrY === 'number') setQrPos({ x: data.qrX, y: data.qrY });
+        if (typeof data.qrSize === 'number') setQrSize(data.qrSize);
         if (typeof data.nameX === 'number' && typeof data.nameY === 'number') setNamePos({ x: data.nameX, y: data.nameY });
         if (data.nameColor) setNameColor(data.nameColor);
+        if (typeof data.nameSize === 'number') setNameSize(data.nameSize);
+        if (data.nameFont) setNameFont(data.nameFont);
       }
       setLoading(false);
     };
@@ -81,11 +92,18 @@ export default function EventDesignPage() {
       imageDataUrl,
       qrX: qrPos.x,
       qrY: qrPos.y,
+      qrSize,
       nameX: namePos.x,
       nameY: namePos.y,
       nameColor,
+      nameSize,
+      nameFont,
     });
     setSaving(false);
+    setTransitioning(true);
+    setTimeout(() => {
+      router.replace(`/${orgSlug}/${eventSlug}`);
+    }, 500);
   };
 
   const easeOut = cubicBezier(0.16, 1, 0.3, 1);
@@ -130,13 +148,14 @@ export default function EventDesignPage() {
                 </div>
               )}
               <div
-                className="absolute w-24 h-24 bg-white border border-slate-200 rounded-xl shadow-md flex items-center justify-center cursor-grab"
+                className="absolute bg-white border border-slate-200 rounded-xl shadow-md flex items-center justify-center cursor-grab"
                 style={{ left: `${qrPos.x * 100}%`, top: `${qrPos.y * 100}%`, transform: 'translate(-50%, -50%)' }}
                 onPointerDown={() => setDragging('qr')}
               >
                 <img
                   alt="QR code"
-                  className="w-full h-full object-cover rounded-xl"
+                  className="object-cover rounded-xl"
+                  style={{ width: qrSize, height: qrSize }}
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(
                     `Guest Name|${params.org}/${params.event}`
                   )}`}
@@ -149,6 +168,8 @@ export default function EventDesignPage() {
                   top: `${namePos.y * 100}%`,
                   transform: 'translate(-50%, -50%)',
                   color: nameColor,
+                  fontSize: `${nameSize}px`,
+                  fontFamily: nameFont,
                 }}
                 onPointerDown={() => setDragging('name')}
               >
@@ -176,6 +197,44 @@ export default function EventDesignPage() {
                 onChange={(event) => setNameColor(event.target.value)}
               />
             </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs uppercase tracking-widest text-slate-500">QR size</label>
+                <input
+                  type="range"
+                  min="60"
+                  max="160"
+                  value={qrSize}
+                  onChange={(event) => setQrSize(Number(event.target.value))}
+                  className="w-full"
+                />
+              </div>
+              <div>
+                <label className="text-xs uppercase tracking-widest text-slate-500">Name size</label>
+                <input
+                  type="range"
+                  min="12"
+                  max="40"
+                  value={nameSize}
+                  onChange={(event) => setNameSize(Number(event.target.value))}
+                  className="w-full"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs uppercase tracking-widest text-slate-500">Font family</label>
+              <select
+                className="mt-2 w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
+                value={nameFont}
+                onChange={(event) => setNameFont(event.target.value)}
+              >
+                <option value="Arial, sans-serif">Arial</option>
+                <option value="'Georgia', serif">Georgia</option>
+                <option value="'Times New Roman', serif">Times New Roman</option>
+                <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                <option value="'Courier New', monospace">Courier New</option>
+              </select>
+            </div>
             <div className="text-sm text-slate-600">
               Event: {eventName} - {eventDate} - {eventLocation}
             </div>
@@ -190,6 +249,25 @@ export default function EventDesignPage() {
           </div>
         </div>
       </div>
+      <AnimatePresence>
+        {transitioning ? (
+          <motion.div
+            className="fixed inset-0 bg-white/90 z-50 flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-sm text-slate-600 flex items-center gap-2"
+            >
+              <span className="h-4 w-4 rounded-full border-2 border-slate-400 border-t-transparent animate-spin" />
+              Saving design...
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </div>
   );
 }
