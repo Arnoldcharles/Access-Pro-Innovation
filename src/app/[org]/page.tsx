@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
-import { motion, cubicBezier } from 'framer-motion';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { AnimatePresence, motion, cubicBezier } from 'framer-motion';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 
 type OrgData = {
@@ -21,9 +21,27 @@ type UserData = {
 export default function OrgDashboardPage() {
   const router = useRouter();
   const params = useParams<{ org: string }>();
+  const searchParams = useSearchParams();
   const [org, setOrg] = useState<OrgData | null>(null);
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [eventName, setEventName] = useState('');
+  const [eventDate, setEventDate] = useState('');
+  const [location, setLocation] = useState('');
+
+  const showCreateEvent = searchParams?.has('create-new-event');
+
+  const slugify = (value: string) =>
+    value
+      .toLowerCase()
+      .trim()
+      .replace(/['"]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
+
+  const eventSlugPreview = useMemo(() => slugify(eventName || 'new-event'), [eventName]);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -55,9 +73,69 @@ export default function OrgDashboardPage() {
     return () => unsub();
   }, [params, router]);
 
+  useEffect(() => {
+    if (!showCreateEvent) return;
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') handleCloseModal();
+    };
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKey);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKey);
+    };
+  }, [showCreateEvent]);
+
   const handleSignOut = async () => {
     await signOut(auth);
     router.replace('/sign-in');
+  };
+
+  const handleCreateEvent = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setError('');
+    const orgSlug = params?.org;
+    if (!orgSlug) return;
+
+    const baseSlug = slugify(eventName);
+    if (!baseSlug) {
+      setError('Please enter an event name.');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      let slug = baseSlug;
+      for (let i = 2; i < 50; i += 1) {
+        const eventSnap = await getDoc(doc(db, 'orgs', orgSlug, 'events', slug));
+        if (!eventSnap.exists()) break;
+        slug = `${baseSlug}-${i}`;
+      }
+
+      const now = serverTimestamp();
+      await setDoc(doc(db, 'orgs', orgSlug, 'events', slug), {
+        name: eventName,
+        slug,
+        date: eventDate,
+        location,
+        createdAt: now,
+        updatedAt: now,
+        status: 'draft',
+      });
+
+      router.replace(`/${orgSlug}/${slug}`);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unable to create event';
+      setError(message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    if (!params?.org) return;
+    router.replace(`/${params.org}`);
   };
 
   const easeOut = cubicBezier(0.16, 1, 0.3, 1);
@@ -95,10 +173,102 @@ export default function OrgDashboardPage() {
           </div>
         </motion.nav>
 
-        <motion.section initial="hidden" animate="show" variants={fadeUp} className="mb-10">
+        <motion.section initial="hidden" animate="show" variants={fadeUp} className="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+          <div>
           <h1 className="text-3xl md:text-4xl font-black mb-3">Welcome{user?.name ? `, ${user.name}` : ''}.</h1>
           <p className="text-slate-400">Here is your live event overview for {org?.name ?? 'your organization'}.</p>
+          </div>
+          <Link
+            className="px-5 py-3 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm"
+            href={`/${params.org}?create-new-event`}
+          >
+            Create event
+          </Link>
         </motion.section>
+
+        <AnimatePresence>
+          {showCreateEvent ? (
+            <motion.div
+              className="fixed inset-0 z-50 flex items-center justify-center px-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <motion.button
+                type="button"
+                aria-label="Close"
+                className="absolute inset-0 bg-black/70"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={handleCloseModal}
+              />
+              <motion.section
+                initial={{ opacity: 0, y: 20, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1, transition: { duration: 0.3, ease: easeOut } }}
+                exit={{ opacity: 0, y: 10, scale: 0.98, transition: { duration: 0.2 } }}
+                className="relative z-10 w-full max-w-[640px] bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl"
+              >
+                <div className="flex items-start justify-between gap-4 mb-4">
+                  <div>
+                    <h2 className="text-lg font-bold mb-1">Create a new event</h2>
+                    <p className="text-sm text-slate-400">
+                      This event will live at{' '}
+                      <span className="text-blue-400 font-semibold">/{params.org}/{eventSlugPreview}</span>
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className="text-sm text-slate-400 hover:text-white"
+                    onClick={handleCloseModal}
+                  >
+                    Close
+                  </button>
+                </div>
+
+                <form onSubmit={handleCreateEvent} className="space-y-4">
+                  <input
+                    className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                    placeholder="Event name"
+                    value={eventName}
+                    onChange={(event) => setEventName(event.target.value)}
+                    required
+                  />
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <input
+                      className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                      placeholder="Event date"
+                      type="date"
+                      value={eventDate}
+                      onChange={(event) => setEventDate(event.target.value)}
+                    />
+                    <input
+                      className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                      placeholder="Location"
+                      value={location}
+                      onChange={(event) => setLocation(event.target.value)}
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm inline-flex items-center justify-center gap-2"
+                  >
+                    {saving ? (
+                      <>
+                        <span className="h-4 w-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+                        Creating...
+                      </>
+                    ) : (
+                      'Create event'
+                    )}
+                  </button>
+                  {error ? <div className="text-sm text-red-400">{error}</div> : null}
+                </form>
+              </motion.section>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
 
         <section className="grid md:grid-cols-3 gap-6">
           {[
