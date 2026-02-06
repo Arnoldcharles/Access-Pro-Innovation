@@ -13,6 +13,10 @@ type EventData = {
   date?: string;
   time?: string;
   location?: string;
+  gatesOpen?: string;
+  peakStart?: string;
+  peakEnd?: string;
+  avgScanSeconds?: number;
   status?: string;
 };
 
@@ -28,6 +32,10 @@ export default function EventDashboardPage() {
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [location, setLocation] = useState('');
+  const [gatesOpen, setGatesOpen] = useState('');
+  const [peakStart, setPeakStart] = useState('');
+  const [peakEnd, setPeakEnd] = useState('');
+  const [avgScanSeconds, setAvgScanSeconds] = useState('');
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
@@ -57,6 +65,10 @@ export default function EventDashboardPage() {
       setDate(data.date ?? '');
       setTime(data.time ?? '');
       setLocation(data.location ?? '');
+      setGatesOpen(data.gatesOpen ?? '');
+      setPeakStart(data.peakStart ?? '');
+      setPeakEnd(data.peakEnd ?? '');
+      setAvgScanSeconds(data.avgScanSeconds ? String(data.avgScanSeconds) : '');
       setLoading(false);
     });
     return () => unsub();
@@ -81,8 +93,12 @@ export default function EventDashboardPage() {
         date,
         time,
         location,
+        gatesOpen,
+        peakStart,
+        peakEnd,
+        avgScanSeconds: avgScanSeconds ? Number(avgScanSeconds) : 0,
       });
-      setEventData((prev) => ({ ...(prev ?? {}), name, date, time, location }));
+      setEventData((prev) => ({ ...(prev ?? {}), name, date, time, location, gatesOpen, peakStart, peakEnd, avgScanSeconds: avgScanSeconds ? Number(avgScanSeconds) : 0 }));
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unable to update event';
       setError(message);
@@ -119,9 +135,20 @@ export default function EventDashboardPage() {
           <h1 className="text-3xl md:text-4xl font-black mt-6 mb-3">{eventData?.name ?? 'Event'}</h1>
           <p className="text-slate-400 mb-8">
             {eventData?.date ? `Date: ${eventData.date}` : 'Date: TBD'}
-            {eventData?.time ? ` · Time: ${eventData.time}` : ' · Time: TBD'} ·{' '}
+            {eventData?.time ? ` - Time: ${eventData.time}` : ' - Time: TBD'} -{' '}
             {eventData?.location ?? 'Location: TBD'}
           </p>
+          <div className="grid sm:grid-cols-3 gap-3 text-xs text-slate-500">
+            <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-2">
+              Gates open: {eventData?.gatesOpen || '0'}
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-2">
+              Peak window: {eventData?.peakStart || '0'} - {eventData?.peakEnd || '0'}
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-2">
+              Avg scan: {eventData?.avgScanSeconds ? `${eventData.avgScanSeconds} sec` : '0'}
+            </div>
+          </div>
         </motion.div>
 
         <section className="grid md:grid-cols-3 gap-6">
@@ -164,11 +191,42 @@ export default function EventDashboardPage() {
                   onChange={(event) => setTime(event.target.value)}
                 />
               </div>
+              <div className="grid sm:grid-cols-3 gap-4">
+                <input
+                  className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                  placeholder="Gates open"
+                  type="time"
+                  value={gatesOpen}
+                  onChange={(event) => setGatesOpen(event.target.value)}
+                />
+                <input
+                  className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                  placeholder="Peak start"
+                  type="time"
+                  value={peakStart}
+                  onChange={(event) => setPeakStart(event.target.value)}
+                />
+                <input
+                  className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                  placeholder="Peak end"
+                  type="time"
+                  value={peakEnd}
+                  onChange={(event) => setPeakEnd(event.target.value)}
+                />
+              </div>
               <input
                 className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
                 placeholder="Location"
                 value={location}
                 onChange={(event) => setLocation(event.target.value)}
+              />
+              <input
+                className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                placeholder="Avg scan seconds"
+                type="number"
+                min="0"
+                value={avgScanSeconds}
+                onChange={(event) => setAvgScanSeconds(event.target.value)}
               />
               <div className="flex items-center gap-3">
                 <button

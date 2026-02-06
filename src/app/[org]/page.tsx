@@ -26,7 +26,19 @@ export default function OrgDashboardPage() {
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [eventsLoading, setEventsLoading] = useState(true);
-  const [events, setEvents] = useState<Array<{ id: string; name?: string; date?: string; time?: string; location?: string }>>([]);
+  const [events, setEvents] = useState<
+    Array<{
+      id: string;
+      name?: string;
+      date?: string;
+      time?: string;
+      location?: string;
+      gatesOpen?: string;
+      peakStart?: string;
+      peakEnd?: string;
+      avgScanSeconds?: number;
+    }>
+  >([]);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<'all' | 'upcoming' | 'past'>('all');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
@@ -39,6 +51,10 @@ export default function OrgDashboardPage() {
   const [eventDate, setEventDate] = useState('');
   const [eventTime, setEventTime] = useState('');
   const [location, setLocation] = useState('');
+  const [gatesOpen, setGatesOpen] = useState('');
+  const [peakStart, setPeakStart] = useState('');
+  const [peakEnd, setPeakEnd] = useState('');
+  const [avgScanSeconds, setAvgScanSeconds] = useState('');
 
   const showCreateEvent = searchParams?.has('create-new-event');
 
@@ -87,6 +103,10 @@ export default function OrgDashboardPage() {
           date?: string;
           time?: string;
           location?: string;
+          gatesOpen?: string;
+          peakStart?: string;
+          peakEnd?: string;
+          avgScanSeconds?: number;
         }>;
         setEvents(items);
         setEventsLoading(false);
@@ -146,6 +166,10 @@ export default function OrgDashboardPage() {
         date: eventDate,
         time: eventTime,
         location,
+        gatesOpen,
+        peakStart,
+        peakEnd,
+        avgScanSeconds: avgScanSeconds ? Number(avgScanSeconds) : 0,
         createdAt: now,
         updatedAt: now,
         status: 'draft',
@@ -217,6 +241,13 @@ export default function OrgDashboardPage() {
     return !Number.isNaN(eventTime) && eventTime < normalizedToday;
   }).length;
   const nextEvent = filteredEvents.find((event) => event.date);
+  const nextEventDateTime = nextEvent?.date
+    ? `${nextEvent.date}${nextEvent.time ? ` ${nextEvent.time}` : ''}`
+    : undefined;
+  const peakWindow = nextEvent?.peakStart || nextEvent?.peakEnd
+    ? `${nextEvent?.peakStart ?? '0'} - ${nextEvent?.peakEnd ?? '0'}`
+    : '0';
+  const avgScan = nextEvent?.avgScanSeconds ? `${nextEvent.avgScanSeconds} sec` : '0';
 
   if (loading) {
     return (
@@ -324,6 +355,29 @@ export default function OrgDashboardPage() {
                       onChange={(event) => setEventTime(event.target.value)}
                     />
                   </div>
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    <input
+                      className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                      placeholder="Gates open"
+                      type="time"
+                      value={gatesOpen}
+                      onChange={(event) => setGatesOpen(event.target.value)}
+                    />
+                    <input
+                      className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                      placeholder="Peak start"
+                      type="time"
+                      value={peakStart}
+                      onChange={(event) => setPeakStart(event.target.value)}
+                    />
+                    <input
+                      className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                      placeholder="Peak end"
+                      type="time"
+                      value={peakEnd}
+                      onChange={(event) => setPeakEnd(event.target.value)}
+                    />
+                  </div>
                   <div>
                     <input
                       className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
@@ -332,6 +386,14 @@ export default function OrgDashboardPage() {
                       onChange={(event) => setLocation(event.target.value)}
                     />
                   </div>
+                  <input
+                    className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                    placeholder="Avg scan seconds"
+                    type="number"
+                    min="0"
+                    value={avgScanSeconds}
+                    onChange={(event) => setAvgScanSeconds(event.target.value)}
+                  />
                   <button
                     type="submit"
                     disabled={saving}
@@ -407,7 +469,7 @@ export default function OrgDashboardPage() {
                 className="px-3 py-2 rounded-full border border-slate-800 text-slate-400 hover:text-white"
                 onClick={() => setSortDir((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
               >
-                Sort: {sortDir === 'asc' ? 'Date ↑' : 'Date ↓'}
+                Sort: {sortDir === 'asc' ? 'Date asc' : 'Date desc'}
               </button>
             </div>
           </div>
@@ -426,7 +488,7 @@ export default function OrgDashboardPage() {
                     <div className="text-lg font-bold mb-1">{event.name ?? event.id}</div>
                     <div className="text-sm text-slate-400">
                       {event.date ? `Date: ${event.date}` : 'Date: TBD'}
-                      {event.time ? ` · Time: ${event.time}` : ' · Time: TBD'}
+                      {event.time ? ` - Time: ${event.time}` : ' - Time: TBD'}
                     </div>
                     <div className="text-xs text-slate-500 mt-2">{event.location ?? 'Location: TBD'}</div>
                   </Link>
@@ -475,26 +537,26 @@ export default function OrgDashboardPage() {
 
         <section className="mt-10 grid lg:grid-cols-[1.2fr,0.8fr] gap-6">
           <div className="p-6 bg-slate-900/50 border border-slate-800 rounded-3xl">
-            <h2 className="text-lg font-bold mb-4">Today’s check-in flow</h2>
+            <h2 className="text-lg font-bold mb-4">Today's check-in flow</h2>
             <div className="space-y-4 text-sm text-slate-400">
               <div className="flex items-center justify-between">
                 <span>Gates open</span>
-                <span>5:30 PM</span>
+                <span>{nextEvent?.gatesOpen || nextEventDateTime || '0'}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span>Peak window</span>
-                <span>7:00 PM - 8:15 PM</span>
+                <span>{peakWindow}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span>Average scan time</span>
-                <span>4.1 sec</span>
+                <span>{avgScan}</span>
               </div>
             </div>
           </div>
           <div className="p-6 bg-slate-900/50 border border-slate-800 rounded-3xl">
             <h2 className="text-lg font-bold mb-4">Next steps</h2>
             <div className="space-y-3 text-sm text-slate-400">
-              <div>Upload today’s guest list</div>
+              <div>Upload today's guest list</div>
               <div>Assign staff to scan lanes</div>
               <div>Enable SMS reminders</div>
             </div>
