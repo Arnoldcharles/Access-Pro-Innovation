@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic';
 
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, cubicBezier } from 'framer-motion';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
@@ -20,7 +20,6 @@ const slugify = (value: string) =>
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -45,7 +44,7 @@ export default function OnboardingPage() {
       setName(user.displayName ?? '');
       setPhone(user.phoneNumber ?? '');
 
-      const allowNewOrg = searchParams?.has('newOrg');
+      const allowNewOrg = typeof window !== 'undefined' && window.location.search.includes('newOrg=1');
       const snap = await getDoc(doc(db, 'users', user.uid));
       if (snap.exists()) {
         const data = snap.data();
