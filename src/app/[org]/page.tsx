@@ -251,28 +251,28 @@ export default function OrgDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#030712] text-slate-100 font-sans antialiased flex items-center justify-center">
+      <div className="min-h-screen bg-white text-slate-900 font-sans antialiased flex items-center justify-center">
         Loading dashboard...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 font-sans antialiased">
+    <div className="min-h-screen bg-white text-slate-900 font-sans antialiased">
       <div className="max-w-[1200px] mx-auto px-6 sm:px-10 lg:px-16 py-12">
         <motion.nav initial="hidden" animate="show" variants={fadeUp} className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-bold shadow-lg shadow-blue-500/20">A</div>
+            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/20">A</div>
             <div>
               <div className="font-bold text-xl tracking-tight">{org?.name ?? 'Organization'}</div>
               <div className="text-xs text-slate-500">Dashboard</div>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3 text-sm">
-            <Link className="px-4 py-2 rounded-full bg-slate-900 text-slate-300" href="/">
+            <Link className="px-4 py-2 rounded-full bg-slate-100 text-slate-700" href="/">
               Marketing site
             </Link>
-            <button className="px-4 py-2 rounded-full bg-slate-800 text-slate-200" onClick={handleSignOut}>
+            <button className="px-4 py-2 rounded-full bg-slate-900 text-white" onClick={handleSignOut}>
               Sign out
             </button>
           </div>
@@ -281,7 +281,7 @@ export default function OrgDashboardPage() {
         <motion.section initial="hidden" animate="show" variants={fadeUp} className="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
           <div>
           <h1 className="text-3xl md:text-4xl font-black mb-3">Welcome{user?.name ? `, ${user.name}` : ''}.</h1>
-          <p className="text-slate-400">Here is your live event overview for {org?.name ?? 'your organization'}.</p>
+          <p className="text-slate-600">Here is your live event overview for {org?.name ?? 'your organization'}.</p>
           </div>
           <Link
             className="px-5 py-3 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm"
@@ -312,19 +312,19 @@ export default function OrgDashboardPage() {
                 initial={{ opacity: 0, y: 20, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1, transition: { duration: 0.3, ease: easeOut } }}
                 exit={{ opacity: 0, y: 10, scale: 0.98, transition: { duration: 0.2 } }}
-                className="relative z-10 w-full max-w-[640px] bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl"
+                className="relative z-10 w-full max-w-[640px] bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-2xl"
               >
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <div>
                     <h2 className="text-lg font-bold mb-1">Create a new event</h2>
-                    <p className="text-sm text-slate-400">
+                    <p className="text-sm text-slate-600">
                       This event will live at{' '}
                       <span className="text-blue-400 font-semibold">/{params.org}/{eventSlugPreview}</span>
                     </p>
                   </div>
                   <button
                     type="button"
-                    className="text-sm text-slate-400 hover:text-white"
+                    className="text-sm text-slate-500 hover:text-slate-900"
                     onClick={handleCloseModal}
                   >
                     Close
@@ -333,7 +333,7 @@ export default function OrgDashboardPage() {
 
                 <form onSubmit={handleCreateEvent} className="space-y-4">
                   <input
-                    className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                     placeholder="Event name"
                     value={eventName}
                     onChange={(event) => setEventName(event.target.value)}
@@ -341,14 +341,14 @@ export default function OrgDashboardPage() {
                   />
                   <div className="grid sm:grid-cols-2 gap-4">
                     <input
-                      className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                       placeholder="Event date"
                       type="date"
                       value={eventDate}
                       onChange={(event) => setEventDate(event.target.value)}
                     />
                     <input
-                      className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                       placeholder="Event time"
                       type="time"
                       value={eventTime}
@@ -357,21 +357,21 @@ export default function OrgDashboardPage() {
                   </div>
                   <div className="grid sm:grid-cols-3 gap-4">
                     <input
-                      className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                       placeholder="Gates open"
                       type="time"
                       value={gatesOpen}
                       onChange={(event) => setGatesOpen(event.target.value)}
                     />
                     <input
-                      className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                       placeholder="Peak start"
                       type="time"
                       value={peakStart}
                       onChange={(event) => setPeakStart(event.target.value)}
                     />
                     <input
-                      className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                       placeholder="Peak end"
                       type="time"
                       value={peakEnd}
@@ -380,14 +380,14 @@ export default function OrgDashboardPage() {
                   </div>
                   <div>
                     <input
-                      className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                       placeholder="Location"
                       value={location}
                       onChange={(event) => setLocation(event.target.value)}
                     />
                   </div>
                   <input
-                    className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                     placeholder="Avg scan seconds"
                     type="number"
                     min="0"
@@ -421,7 +421,7 @@ export default function OrgDashboardPage() {
             { label: 'Upcoming events', value: String(upcomingEvents), note: nextEvent?.name ? `Next: ${nextEvent.name}` : 'No upcoming events' },
             { label: 'Past events', value: String(pastEvents), note: pastEvents ? 'Archived and searchable' : 'No past events' },
           ].map((card) => (
-            <div key={card.label} className="p-6 bg-slate-900/50 border border-slate-800 rounded-3xl">
+            <div key={card.label} className="p-6 bg-white border border-slate-200 rounded-3xl shadow-sm">
               <div className="text-xs uppercase tracking-widest text-slate-500">{card.label}</div>
               <div className="text-3xl font-black mt-2">{card.value}</div>
               <div className="text-sm text-slate-500 mt-2">{card.note}</div>
@@ -438,7 +438,7 @@ export default function OrgDashboardPage() {
           </div>
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
             <input
-              className="w-full sm:max-w-sm bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-2 text-sm"
+              className="w-full sm:max-w-sm bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm"
               placeholder="Search events"
               value={search}
               onChange={(event) => {
@@ -452,7 +452,7 @@ export default function OrgDashboardPage() {
                   key={item}
                   type="button"
                   className={`px-3 py-2 rounded-full border ${
-                    filter === item ? 'bg-blue-600 border-blue-500 text-white' : 'border-slate-800 text-slate-400'
+                    filter === item ? 'bg-blue-600 border-blue-500 text-white' : 'border-slate-200 text-slate-600'
                   }`}
                   onClick={() => {
                     setFilter(item);
@@ -466,7 +466,7 @@ export default function OrgDashboardPage() {
             <div className="flex items-center gap-2 text-sm">
               <button
                 type="button"
-                className="px-3 py-2 rounded-full border border-slate-800 text-slate-400 hover:text-white"
+                className="px-3 py-2 rounded-full border border-slate-200 text-slate-600 hover:text-slate-900"
                 onClick={() => setSortDir((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
               >
                 Sort: {sortDir === 'asc' ? 'Date asc' : 'Date desc'}
@@ -482,11 +482,11 @@ export default function OrgDashboardPage() {
               {pagedEvents.map((event) => (
                 <div
                   key={event.id}
-                  className="p-5 bg-slate-900/50 border border-slate-800 rounded-3xl hover:border-blue-500/40 transition-colors"
+                  className="p-5 bg-white border border-slate-200 rounded-3xl hover:border-blue-500/40 transition-colors shadow-sm"
                 >
                   <Link href={`/${params.org}/${event.id}`}>
                     <div className="text-lg font-bold mb-1">{event.name ?? event.id}</div>
-                    <div className="text-sm text-slate-400">
+                    <div className="text-sm text-slate-600">
                       {event.date ? `Date: ${event.date}` : 'Date: TBD'}
                       {event.time ? ` - Time: ${event.time}` : ' - Time: TBD'}
                     </div>
@@ -509,14 +509,14 @@ export default function OrgDashboardPage() {
             </div>
           )}
           {filteredEvents.length > 0 ? (
-            <div className="flex items-center justify-between mt-6 text-sm text-slate-400">
+            <div className="flex items-center justify-between mt-6 text-sm text-slate-600">
               <div>
                 Page {currentPage} of {totalPages}
               </div>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  className="px-3 py-2 rounded-full border border-slate-800 disabled:opacity-40"
+                  className="px-3 py-2 rounded-full border border-slate-200 disabled:opacity-40"
                   onClick={() => setPage((prev) => Math.max(1, prev - 1))}
                   disabled={currentPage === 1}
                 >
@@ -524,7 +524,7 @@ export default function OrgDashboardPage() {
                 </button>
                 <button
                   type="button"
-                  className="px-3 py-2 rounded-full border border-slate-800 disabled:opacity-40"
+                  className="px-3 py-2 rounded-full border border-slate-200 disabled:opacity-40"
                   onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
                   disabled={currentPage === totalPages}
                 >
@@ -536,9 +536,9 @@ export default function OrgDashboardPage() {
         </section>
 
         <section className="mt-10 grid lg:grid-cols-[1.2fr,0.8fr] gap-6">
-          <div className="p-6 bg-slate-900/50 border border-slate-800 rounded-3xl">
+          <div className="p-6 bg-white border border-slate-200 rounded-3xl shadow-sm">
             <h2 className="text-lg font-bold mb-4">Today's check-in flow</h2>
-            <div className="space-y-4 text-sm text-slate-400">
+            <div className="space-y-4 text-sm text-slate-600">
               <div className="flex items-center justify-between">
                 <span>Gates open</span>
                 <span>{nextEvent?.gatesOpen || nextEventDateTime || '0'}</span>
@@ -553,9 +553,9 @@ export default function OrgDashboardPage() {
               </div>
             </div>
           </div>
-          <div className="p-6 bg-slate-900/50 border border-slate-800 rounded-3xl">
+          <div className="p-6 bg-white border border-slate-200 rounded-3xl shadow-sm">
             <h2 className="text-lg font-bold mb-4">Next steps</h2>
-            <div className="space-y-3 text-sm text-slate-400">
+            <div className="space-y-3 text-sm text-slate-600">
               <div>Upload today's guest list</div>
               <div>Assign staff to scan lanes</div>
               <div>Enable SMS reminders</div>

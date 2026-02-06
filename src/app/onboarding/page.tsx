@@ -125,23 +125,23 @@ export default function OnboardingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#030712] text-slate-100 font-sans antialiased flex items-center justify-center">
+      <div className="min-h-screen bg-white text-slate-900 font-sans antialiased flex items-center justify-center">
         Loading onboarding...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 font-sans antialiased">
+    <div className="min-h-screen bg-white text-slate-900 font-sans antialiased">
       <div className="max-w-[640px] mx-auto px-6 sm:px-10 py-16">
         <motion.div initial="hidden" animate="show" variants={fadeUp}>
           <Link className="flex items-center gap-3 mb-10" href="/">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-bold shadow-lg shadow-blue-500/20">A</div>
+            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/20">A</div>
             <span className="font-bold text-xl tracking-tight">AccessPro</span>
           </Link>
 
           <h1 className="text-3xl md:text-4xl font-black mb-3">Set up your organization</h1>
-          <p className="text-slate-400 mb-8">
+          <p className="text-slate-600 mb-8">
             Confirm your details and create your organization workspace. Your dashboard URL will be:
             <span className="text-blue-400 font-semibold"> /{orgSlugPreview}</span>
           </p>
@@ -149,21 +149,21 @@ export default function OnboardingPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid sm:grid-cols-2 gap-4">
               <input
-                className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                 placeholder="Full name"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 required
               />
               <input
-                className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                 placeholder="Phone number"
                 value={phone}
                 onChange={(event) => setPhone(event.target.value)}
               />
             </div>
             <input
-              className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+              className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
               placeholder="Organization name"
               value={orgName}
               onChange={(event) => setOrgName(event.target.value)}
@@ -171,13 +171,13 @@ export default function OnboardingPage() {
             />
             <div className="grid sm:grid-cols-2 gap-4">
               <input
-                className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                 placeholder="Organization size"
                 value={orgSize}
                 onChange={(event) => setOrgSize(event.target.value)}
               />
               <input
-                className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                 placeholder="Your role"
                 value={role}
                 onChange={(event) => setRole(event.target.value)}

@@ -97,28 +97,28 @@ export default function CreateEventPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#030712] text-slate-100 font-sans antialiased flex items-center justify-center">
+      <div className="min-h-screen bg-white text-slate-900 font-sans antialiased flex items-center justify-center">
         Loading create event...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 font-sans antialiased">
+    <div className="min-h-screen bg-white text-slate-900 font-sans antialiased">
       <div className="max-w-[720px] mx-auto px-6 sm:px-10 py-16">
         <motion.div initial="hidden" animate="show" variants={fadeUp}>
-          <Link className="text-sm text-slate-400 hover:text-white" href={`/${params.org}`}>
+          <Link className="text-sm text-slate-600 hover:text-slate-900" href={`/${params.org}`}>
             Back to {orgName || 'dashboard'}
           </Link>
 
           <h1 className="text-3xl md:text-4xl font-black mt-6 mb-3">Create a new event</h1>
-          <p className="text-slate-400 mb-8">
+          <p className="text-slate-600 mb-8">
             This event will live at: <span className="text-blue-400 font-semibold">/{params.org}/{eventSlugPreview}</span>
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <input
-              className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+              className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
               placeholder="Event name"
               value={eventName}
               onChange={(event) => setEventName(event.target.value)}
@@ -126,14 +126,14 @@ export default function CreateEventPage() {
             />
             <div className="grid sm:grid-cols-2 gap-4">
               <input
-                className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                 placeholder="Event date"
                 type="date"
                 value={eventDate}
                 onChange={(event) => setEventDate(event.target.value)}
               />
               <input
-                className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                 placeholder="Location"
                 value={location}
                 onChange={(event) => setLocation(event.target.value)}

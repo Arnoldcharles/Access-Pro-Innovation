@@ -14,14 +14,14 @@ export default function WorkflowPage() {
   const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } } };
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 font-sans antialiased">
+    <div className="min-h-screen bg-white text-slate-900 font-sans antialiased">
       <div className="max-w-[1200px] mx-auto px-6 sm:px-10 lg:px-16 py-12">
         <motion.nav initial="hidden" animate="show" variants={fadeUp} className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-16">
           <Link className="flex items-center gap-3" href="/">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-bold shadow-lg shadow-blue-500/20">A</div>
+            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/20">A</div>
             <span className="font-bold text-xl tracking-tight">AccessPro</span>
           </Link>
-          <div className="flex flex-wrap items-center gap-4 text-sm font-medium text-slate-400">
+          <div className="flex flex-wrap items-center gap-4 text-sm font-medium text-slate-600">
             <Link className="hover:text-white transition-colors" href="/features">Features</Link>
             <Link className="hover:text-white transition-colors" href="/pricing">Pricing</Link>
             <Link className="hover:text-white transition-colors" href="/security">Security</Link>
@@ -30,11 +30,11 @@ export default function WorkflowPage() {
         </motion.nav>
 
         <motion.header initial="hidden" animate="show" variants={stagger} className="mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-semibold text-indigo-300 mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-xs font-semibold text-indigo-600 mb-4">
             Process flow
           </div>
           <h1 className="text-4xl md:text-6xl font-black leading-tight">A step-by-step workflow your team can trust.</h1>
-          <p className="text-slate-400 mt-4 max-w-2xl text-lg leading-relaxed">
+          <p className="text-slate-600 mt-4 max-w-2xl text-lg leading-relaxed">
             AccessPro connects every phase of your event journey, from planning to post-event reporting.
           </p>
         </motion.header>
@@ -70,9 +70,9 @@ export default function WorkflowPage() {
               bullets: ['Arrival curve reports', 'Dwell-time tracking', 'CSV and PDF exports'],
             },
           ].map((item) => (
-            <motion.div key={item.title} variants={fadeUp} className="p-8 bg-slate-900/50 border border-slate-800 rounded-[2rem]">
+            <motion.div key={item.title} variants={fadeUp} className="p-8 bg-white border border-slate-200 rounded-[2rem] shadow-sm">
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-11 h-11 rounded-xl bg-blue-600/10 text-blue-400 flex items-center justify-center">
+                <div className="w-11 h-11 rounded-xl bg-blue-600/10 text-blue-600 flex items-center justify-center">
                   {item.icon}
                 </div>
                 <div>
@@ -80,10 +80,10 @@ export default function WorkflowPage() {
                   <h3 className="text-xl font-bold">{item.title}</h3>
                 </div>
               </div>
-              <p className="text-slate-400 mb-6">{item.desc}</p>
-              <div className="grid sm:grid-cols-3 gap-3 text-sm text-slate-500">
+              <p className="text-slate-600 mb-6">{item.desc}</p>
+              <div className="grid sm:grid-cols-3 gap-3 text-sm text-slate-600">
                 {item.bullets.map((bullet) => (
-                  <div key={bullet} className="bg-white/5 border border-white/10 rounded-xl px-4 py-2">
+                  <div key={bullet} className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2">
                     {bullet}
                   </div>
                 ))}
@@ -93,7 +93,7 @@ export default function WorkflowPage() {
         </motion.section>
 
         <motion.section initial="hidden" animate="show" variants={fadeUp} className="mt-16 text-center">
-          <Link className="inline-flex items-center gap-2 text-blue-400 font-semibold hover:text-blue-300" href="/pricing">
+          <Link className="inline-flex items-center gap-2 text-blue-600 font-semibold hover:text-blue-700" href="/pricing">
             See plans built for your workflow <ArrowRight size={14} />
           </Link>
         </motion.section>

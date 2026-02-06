@@ -14,14 +14,14 @@ export default function PricingPage() {
   const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } } };
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 font-sans antialiased">
+    <div className="min-h-screen bg-white text-slate-900 font-sans antialiased">
       <div className="max-w-[1200px] mx-auto px-6 sm:px-10 lg:px-16 py-12">
         <motion.nav initial="hidden" animate="show" variants={fadeUp} className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-16">
           <Link className="flex items-center gap-3" href="/">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-bold shadow-lg shadow-blue-500/20">A</div>
+            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/20">A</div>
             <span className="font-bold text-xl tracking-tight">AccessPro</span>
           </Link>
-          <div className="flex flex-wrap items-center gap-4 text-sm font-medium text-slate-400">
+          <div className="flex flex-wrap items-center gap-4 text-sm font-medium text-slate-600">
             <Link className="hover:text-white transition-colors" href="/features">Features</Link>
             <Link className="hover:text-white transition-colors" href="/workflow">Workflow</Link>
             <Link className="hover:text-white transition-colors" href="/security">Security</Link>
@@ -30,11 +30,11 @@ export default function PricingPage() {
         </motion.nav>
 
         <motion.header initial="hidden" animate="show" variants={stagger} className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-semibold text-blue-400 mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-xs font-semibold text-blue-700 mb-4">
             Pricing
           </div>
           <h1 className="text-4xl md:text-6xl font-black leading-tight">Plans that scale with your events.</h1>
-          <p className="text-slate-400 mt-4 max-w-2xl mx-auto text-lg leading-relaxed">
+          <p className="text-slate-600 mt-4 max-w-2xl mx-auto text-lg leading-relaxed">
             Choose a plan that matches your audience size, support needs, and analytics depth.
           </p>
         </motion.header>
@@ -65,8 +65,8 @@ export default function PricingPage() {
               key={tier.title}
               variants={fadeUp}
               className={`p-8 rounded-[2rem] border ${
-                tier.highlight ? 'bg-blue-600/10 border-blue-500/50' : 'bg-slate-900/50 border-slate-800'
-              }`}
+                tier.highlight ? 'bg-blue-50 border-blue-200' : 'bg-white border-slate-200'
+              } shadow-sm`}
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-2xl font-bold">{tier.title}</h3>
@@ -77,11 +77,11 @@ export default function PricingPage() {
                 )}
               </div>
               <div className="text-4xl font-black mb-2">{tier.price}</div>
-              <p className="text-sm text-slate-400 mb-6">{tier.desc}</p>
-              <div className="space-y-3 text-sm text-slate-400 mb-8">
+              <p className="text-sm text-slate-600 mb-6">{tier.desc}</p>
+              <div className="space-y-3 text-sm text-slate-600 mb-8">
                 {tier.features.map((feature) => (
                   <div key={feature} className="flex items-center gap-3">
-                    <CheckCircle2 size={16} className="text-emerald-400" />
+                    <CheckCircle2 size={16} className="text-emerald-600" />
                     {feature}
                   </div>
                 ))}
@@ -90,7 +90,7 @@ export default function PricingPage() {
                 className={`w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl font-semibold ${
                   tier.highlight
                     ? 'bg-blue-600 hover:bg-blue-500 text-white'
-                    : 'bg-slate-800 hover:bg-slate-700 text-white'
+                    : 'bg-slate-900 hover:bg-slate-800 text-white'
                 }`}
                 href="/contact"
               >
@@ -100,7 +100,7 @@ export default function PricingPage() {
           ))}
         </motion.section>
 
-        <motion.section initial="hidden" animate="show" variants={fadeUp} className="mt-16 text-center text-sm text-slate-500">
+        <motion.section initial="hidden" animate="show" variants={fadeUp} className="mt-16 text-center text-sm text-slate-600">
           All plans include GDPR-ready data handling, unlimited staff users, and standard reporting.
         </motion.section>
       </div>

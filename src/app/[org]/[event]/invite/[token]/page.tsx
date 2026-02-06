@@ -86,7 +86,7 @@ export default function InvitePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#030712] text-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-white text-slate-900 flex items-center justify-center">
         Loading invite...
       </div>
     );
@@ -94,28 +94,28 @@ export default function InvitePage() {
 
   if (error && !invite) {
     return (
-      <div className="min-h-screen bg-[#030712] text-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-white text-slate-900 flex items-center justify-center">
         {error}
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 font-sans antialiased">
+    <div className="min-h-screen bg-white text-slate-900 font-sans antialiased">
       <div className="max-w-[620px] mx-auto px-6 sm:px-10 py-16">
-        <motion.div initial="hidden" animate="show" variants={fadeUp} className="bg-slate-900/60 border border-slate-800 rounded-3xl p-8">
+        <motion.div initial="hidden" animate="show" variants={fadeUp} className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
           <h1 className="text-2xl font-black mb-2">
             {invite?.guestName || 'Guest'}, you are invited to {invite?.eventName}
           </h1>
-          <p className="text-slate-400 mb-6">
+          <p className="text-slate-600 mb-6">
             Date: {invite?.eventDate || 'TBD'} - Location: {invite?.eventLocation || 'TBD'}
           </p>
 
           {!verified ? (
             <div className="space-y-4">
-              <p className="text-sm text-slate-400">Confirm your phone number to open this invite.</p>
+              <p className="text-sm text-slate-600">Confirm your phone number to open this invite.</p>
               <input
-                className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                 placeholder="Phone number"
                 value={phoneCheck}
                 onChange={(event) => setPhoneCheck(event.target.value)}
@@ -127,13 +127,13 @@ export default function InvitePage() {
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="text-sm text-slate-400">Message:</div>
-              <div className="text-sm bg-white/5 border border-white/10 rounded-xl p-4">{invite?.message}</div>
+              <div className="text-sm text-slate-600">Message:</div>
+              <div className="text-sm bg-slate-50 border border-slate-200 rounded-xl p-4">{invite?.message}</div>
               {invite?.imageDataUrl ? (
                 <img src={invite.imageDataUrl} alt="Invite" className="rounded-2xl border border-white/10" />
               ) : null}
               <div className="flex items-center gap-4">
-                <div className="w-28 h-28 bg-slate-950/40 border border-slate-800 rounded-xl flex items-center justify-center text-xs text-slate-500">
+                <div className="w-28 h-28 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-xs text-slate-500">
                   <img
                     alt="QR code"
                     className="w-full h-full object-cover rounded-xl"

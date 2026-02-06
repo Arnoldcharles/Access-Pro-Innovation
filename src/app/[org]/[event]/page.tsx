@@ -409,33 +409,33 @@ export default function EventDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#030712] text-slate-100 font-sans antialiased flex items-center justify-center">
+      <div className="min-h-screen bg-white text-slate-900 font-sans antialiased flex items-center justify-center">
         Loading event...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 font-sans antialiased">
+    <div className="min-h-screen bg-white text-slate-900 font-sans antialiased">
       <div className="max-w-[1200px] mx-auto px-6 sm:px-10 lg:px-16 py-12">
         <motion.div initial="hidden" animate="show" variants={fadeUp}>
-          <Link className="text-sm text-slate-400 hover:text-white" href={`/${params.org}`}>
+          <Link className="text-sm text-slate-600 hover:text-slate-900" href={`/${params.org}`}>
             Back to {orgName || 'dashboard'}
           </Link>
           <h1 className="text-3xl md:text-4xl font-black mt-6 mb-3">{eventData?.name ?? 'Event'}</h1>
-          <p className="text-slate-400 mb-8">
+          <p className="text-slate-600 mb-8">
             {eventData?.date ? `Date: ${eventData.date}` : 'Date: TBD'}
             {eventData?.time ? ` - Time: ${eventData.time}` : ' - Time: TBD'} -{' '}
             {eventData?.location ?? 'Location: TBD'}
           </p>
           <div className="grid sm:grid-cols-3 gap-3 text-xs text-slate-500">
-            <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-2">
+            <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2">
               Gates open: {eventData?.gatesOpen || '0'}
             </div>
-            <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-2">
+            <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2">
               Peak window: {eventData?.peakStart || '0'} - {eventData?.peakEnd || '0'}
             </div>
-            <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-2">
+            <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2">
               Avg scan: {eventData?.avgScanSeconds ? `${eventData.avgScanSeconds} sec` : '0'}
             </div>
           </div>
@@ -447,7 +447,7 @@ export default function EventDashboardPage() {
             { label: 'Checked-in', value: '0', note: 'Check-in opens on event day' },
             { label: 'Staff assigned', value: '0', note: 'Assign your team' },
           ].map((card) => (
-            <div key={card.label} className="p-6 bg-slate-900/50 border border-slate-800 rounded-3xl">
+            <div key={card.label} className="p-6 bg-white border border-slate-200 rounded-3xl shadow-sm">
               <div className="text-xs uppercase tracking-widest text-slate-500">{card.label}</div>
               <div className="text-3xl font-black mt-2">{card.value}</div>
               <div className="text-sm text-slate-500 mt-2">{card.note}</div>
@@ -456,25 +456,25 @@ export default function EventDashboardPage() {
         </section>
 
         <section className="mt-10 grid lg:grid-cols-[1.1fr,0.9fr] gap-6">
-          <div className="p-6 bg-slate-900/50 border border-slate-800 rounded-3xl">
+          <div className="p-6 bg-white border border-slate-200 rounded-3xl shadow-sm">
             <h2 className="text-lg font-bold mb-4">Edit event details</h2>
             <form onSubmit={handleUpdate} className="space-y-4">
               <input
-                className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                 placeholder="Event name"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
               />
               <div className="grid sm:grid-cols-2 gap-4">
                 <input
-                  className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                   placeholder="Event date"
                   type="date"
                   value={date}
                   onChange={(event) => setDate(event.target.value)}
                 />
                 <input
-                  className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                   placeholder="Event time"
                   type="time"
                   value={time}
@@ -483,21 +483,21 @@ export default function EventDashboardPage() {
               </div>
               <div className="grid sm:grid-cols-3 gap-4">
                 <input
-                  className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                   placeholder="Gates open"
                   type="time"
                   value={gatesOpen}
                   onChange={(event) => setGatesOpen(event.target.value)}
                 />
                 <input
-                  className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                   placeholder="Peak start"
                   type="time"
                   value={peakStart}
                   onChange={(event) => setPeakStart(event.target.value)}
                 />
                 <input
-                  className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                   placeholder="Peak end"
                   type="time"
                   value={peakEnd}
@@ -505,13 +505,13 @@ export default function EventDashboardPage() {
                 />
               </div>
               <input
-                className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                 placeholder="Location"
                 value={location}
                 onChange={(event) => setLocation(event.target.value)}
               />
               <input
-                className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                 placeholder="Avg scan seconds"
                 type="number"
                 min="0"
@@ -533,9 +533,9 @@ export default function EventDashboardPage() {
               {error ? <div className="text-sm text-red-400">{error}</div> : null}
             </form>
           </div>
-          <div className="p-6 bg-slate-900/50 border border-slate-800 rounded-3xl">
+          <div className="p-6 bg-white border border-slate-200 rounded-3xl shadow-sm">
             <h2 className="text-lg font-bold mb-4">Quick actions</h2>
-            <div className="space-y-3 text-sm text-slate-400">
+            <div className="space-y-3 text-sm text-slate-600">
               <div>Import guest list</div>
               <div>Assign staff</div>
               <div>Generate QR passes</div>
@@ -544,23 +544,23 @@ export default function EventDashboardPage() {
         </section>
 
         <section className="mt-10 grid lg:grid-cols-[1.1fr,0.9fr] gap-6">
-          <div className="p-6 bg-slate-900/50 border border-slate-800 rounded-3xl">
+          <div className="p-6 bg-white border border-slate-200 rounded-3xl shadow-sm">
             <h2 className="text-lg font-bold mb-4">Guest list</h2>
             <div className="grid sm:grid-cols-3 gap-3 mb-4">
               <input
-                className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                 placeholder="Name"
                 value={guestName}
                 onChange={(event) => setGuestName(event.target.value)}
               />
               <input
-                className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                 placeholder="Phone number"
                 value={guestPhone}
                 onChange={(event) => setGuestPhone(event.target.value)}
               />
               <input
-                className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                 placeholder="Email"
                 value={guestEmail}
                 onChange={(event) => setGuestEmail(event.target.value)}
@@ -569,12 +569,12 @@ export default function EventDashboardPage() {
             <div className="flex flex-wrap items-center gap-3 mb-6">
               <button
                 type="button"
-                className="px-4 py-2 rounded-2xl bg-slate-800 text-white text-sm"
+                className="px-4 py-2 rounded-2xl bg-slate-900 text-white text-sm"
                 onClick={handleAddGuest}
               >
                 Add guest
               </button>
-              <label className="px-4 py-2 rounded-2xl bg-slate-800 text-white text-sm cursor-pointer">
+              <label className="px-4 py-2 rounded-2xl bg-slate-900 text-white text-sm cursor-pointer">
                 Import CSV or PDF
                 <input type="file" accept=".csv,.pdf" className="hidden" onChange={handleImportFile} />
               </label>
@@ -594,7 +594,7 @@ export default function EventDashboardPage() {
                 Invite all via WhatsApp
               </button>
             </div>
-            {guestError ? <div className="text-sm text-red-400 mb-4">{guestError}</div> : null}
+            {guestError ? <div className="text-sm text-red-500 mb-4">{guestError}</div> : null}
             <div className="space-y-2">
               {combinedGuests.length === 0 ? (
                 <div className="text-sm text-slate-500">No guests added yet.</div>
@@ -603,25 +603,22 @@ export default function EventDashboardPage() {
                   const isPending = !guest.id;
                   const isEditing = editingId === guest.id;
                   return (
-                    <div
-                      key={`${guest.email}-${index}`}
-                      className="bg-white/5 border border-white/10 rounded-xl px-4 py-3"
-                    >
+                    <div key={`${guest.email}-${index}`} className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3">
                       {isEditing ? (
                         <div className="space-y-3">
                           <div className="grid sm:grid-cols-3 gap-3">
                             <input
-                              className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-3 py-2 text-sm"
+                              className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm"
                               value={editName}
                               onChange={(event) => setEditName(event.target.value)}
                             />
                             <input
-                              className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-3 py-2 text-sm"
+                              className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm"
                               value={editPhone}
                               onChange={(event) => setEditPhone(event.target.value)}
                             />
                             <input
-                              className="w-full bg-slate-950/40 border border-slate-800 rounded-xl px-3 py-2 text-sm"
+                              className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm"
                               value={editEmail}
                               onChange={(event) => setEditEmail(event.target.value)}
                             />
@@ -683,9 +680,9 @@ export default function EventDashboardPage() {
               )}
             </div>
           </div>
-          <div className="p-6 bg-slate-900/50 border border-slate-800 rounded-3xl">
+          <div className="p-6 bg-white border border-slate-200 rounded-3xl shadow-sm">
             <h2 className="text-lg font-bold mb-4">Import tips</h2>
-            <div className="space-y-3 text-sm text-slate-400">
+            <div className="space-y-3 text-sm text-slate-600">
               <div>CSV columns supported: name, phone, email</div>
               <div>Header row is optional.</div>
               <div>PDF import is not available yet.</div>
@@ -714,20 +711,20 @@ export default function EventDashboardPage() {
                 initial={{ opacity: 0, y: 20, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1, transition: { duration: 0.3, ease: easeOut } }}
                 exit={{ opacity: 0, y: 10, scale: 0.98, transition: { duration: 0.2 } }}
-                className="relative z-10 w-full max-w-[680px] bg-slate-900/95 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl"
+                className="relative z-10 w-full max-w-[680px] bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-2xl"
               >
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <div>
                     <h2 className="text-lg font-bold mb-1">
                       {inviteMode === 'single' ? 'Invite guest via WhatsApp' : 'Invite all guests via WhatsApp'}
                     </h2>
-                    <p className="text-sm text-slate-400">
+                    <p className="text-sm text-slate-600">
                       {inviteMode === 'single'
                         ? `Sending to ${inviteTarget?.name ?? ''} (${inviteTarget?.phone ?? ''})`
                         : `Sending to ${guests.length} saved guests`}
                     </p>
                   </div>
-                  <button type="button" className="text-sm text-slate-400 hover:text-white" onClick={closeInviteModal}>
+                  <button type="button" className="text-sm text-slate-500 hover:text-slate-900" onClick={closeInviteModal}>
                     Close
                   </button>
                 </div>
@@ -736,7 +733,7 @@ export default function EventDashboardPage() {
                   <div>
                     <label className="text-xs uppercase tracking-widest text-slate-500">Message</label>
                     <textarea
-                      className="mt-2 w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm min-h-[120px]"
+                      className="mt-2 w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm min-h-[120px]"
                       value={inviteMessage}
                       onChange={(event) => setInviteMessage(event.target.value)}
                     />
@@ -746,16 +743,16 @@ export default function EventDashboardPage() {
                     <input
                       type="file"
                       accept="image/*"
-                      className="mt-2 w-full bg-slate-950/40 border border-slate-800 rounded-xl px-4 py-3 text-sm"
+                      className="mt-2 w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
                       onChange={handleInviteImage}
                     />
                   </div>
                   {inviteMode === 'single' ? (
-                    <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                    <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
                       <div className="text-xs text-slate-500 mb-2">Invite link</div>
                       <div className="text-sm text-blue-400">{inviteLink || 'Link will appear after send.'}</div>
                       <div className="mt-4 flex items-center gap-4">
-                        <div className="w-28 h-28 bg-slate-950/40 border border-slate-800 rounded-xl flex items-center justify-center text-xs text-slate-500">
+                        <div className="w-28 h-28 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-xs text-slate-500">
                           {inviteLink ? (
                             <img
                               alt="QR code"
