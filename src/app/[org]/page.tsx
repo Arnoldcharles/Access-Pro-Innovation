@@ -78,6 +78,11 @@ export default function OrgDashboardPage() {
         router.replace('/onboarding');
         return;
       }
+      const orgData = orgSnap.data() as { deletedAt?: unknown };
+      if (orgData?.deletedAt) {
+        router.replace(`/org-deleted?org=${slug}`);
+        return;
+      }
 
       setOrg(orgSnap.data() as OrgData);
 

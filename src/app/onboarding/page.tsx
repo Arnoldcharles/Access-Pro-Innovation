@@ -54,8 +54,12 @@ export default function OnboardingPage() {
         setOrgSize((data.orgSize as string) ?? '');
         setRole((data.role as string) ?? '');
         if (data.orgSlug && !allowNewOrg) {
-          router.replace(`/${data.orgSlug}`);
-          return;
+          const orgSnap = await getDoc(doc(db, 'orgs', data.orgSlug as string));
+          const orgData = orgSnap.exists() ? orgSnap.data() : null;
+          if (orgSnap.exists() && !(orgData as { deletedAt?: unknown })?.deletedAt) {
+            router.replace(`/${data.orgSlug}`);
+            return;
+          }
         }
       }
 
