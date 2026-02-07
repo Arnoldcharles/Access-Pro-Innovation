@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { motion, cubicBezier } from 'framer-motion';
@@ -13,6 +13,7 @@ import {
   getDocs,
   onSnapshot,
   query,
+  serverTimestamp,
   updateDoc,
   where,
 } from 'firebase/firestore';
@@ -56,16 +57,8 @@ export default function OrgDashboardPage() {
   const [eventsUnsub, setEventsUnsub] = useState<null | (() => void)>(null);
   const [orgs, setOrgs] = useState<Array<{ slug: string; name?: string }>>([]);
   const [orgMenuOpen, setOrgMenuOpen] = useState(false);
-  const [showDeletedModal, setShowDeletedModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteInput, setDeleteInput] = useState('');
-
-  const deletedOrgName = useMemo(() => {
-    const slug = params?.org;
-    if (!slug) return '';
-    const parts = slug.split('=DELETED');
-    return parts.length > 1 ? parts[0] : '';
-  }, [params]);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -82,11 +75,7 @@ export default function OrgDashboardPage() {
 
       const orgSnap = await getDoc(doc(db, 'orgs', slug));
       if (!orgSnap.exists()) {
-        if (slug.includes('=DELETED')) {
-          setLoading(false);
-        } else {
-          router.replace('/onboarding');
-        }
+        router.replace('/onboarding');
         return;
       }
 
@@ -114,18 +103,13 @@ export default function OrgDashboardPage() {
 
       const orgsQuery = query(collection(db, 'orgs'), where('ownerId', '==', firebaseUser.uid));
       const unsubOrgs = onSnapshot(orgsQuery, (snapshot) => {
-        const items = snapshot.docs.map((docSnap) => ({
-          slug: docSnap.id,
-          ...(docSnap.data() as object),
-        })) as Array<{ slug: string; name?: string }>;
+        const items = snapshot.docs
+          .map((docSnap) => ({
+            slug: docSnap.id,
+            ...(docSnap.data() as object),
+          }))
+          .filter((item) => !(item as { deletedAt?: unknown }).deletedAt) as Array<{ slug: string; name?: string }>;
         setOrgs(items);
-        if (slug.includes('=DELETED')) {
-          if (items.length > 0) {
-            setShowDeletedModal(true);
-          } else {
-            router.replace('/onboarding');
-          }
-        }
       });
       return () => unsubOrgs();
     });
@@ -155,27 +139,14 @@ export default function OrgDashboardPage() {
     const normalizedInput = deleteInput.trim().toLowerCase();
     const normalizedName = currentName.trim().toLowerCase();
     if (normalizedInput !== normalizedName) return;
-    const eventsSnap = await getDocs(collection(db, 'orgs', orgSlug, 'events'));
-    for (const eventDoc of eventsSnap.docs) {
-      const eventId = eventDoc.id;
-      const guestsSnap = await getDocs(collection(db, 'orgs', orgSlug, 'events', eventId, 'guests'));
-      for (const guest of guestsSnap.docs) {
-        await deleteDoc(guest.ref);
-      }
-      const invitesSnap = await getDocs(collection(db, 'orgs', orgSlug, 'events', eventId, 'invites'));
-      for (const invite of invitesSnap.docs) {
-        await deleteDoc(invite.ref);
-      }
-      await deleteDoc(eventDoc.ref);
-    }
-    await deleteDoc(doc(db, 'orgs', orgSlug));
+    await updateDoc(doc(db, 'orgs', orgSlug), { deletedAt: serverTimestamp() });
     const remainingOrgs = orgs.filter((item) => item.slug !== orgSlug);
     if (remainingOrgs.length === 0) {
       await updateDoc(doc(db, 'users', currentUser.uid), { orgSlug: null, orgName: null });
       router.replace('/onboarding');
       return;
     }
-    router.replace(`/${orgSlug}=DELETED`);
+    router.replace(`/org-deleted?org=${orgSlug}`);
     setShowDeleteConfirm(false);
     setDeleteInput('');
   };
@@ -339,7 +310,7 @@ export default function OrgDashboardPage() {
         <section className="mt-10">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold">Your events</h2>
-            <Link className="text-sm text-blue-400 hover:text-blue-300" href={`/${params.org}?create-new-event`}>
+            <Link className="text-sm text-blue-400 hover:text-blue-300" href={`/${params.org}/create-new-event`}>
               Create another event
             </Link>
           </div>
@@ -473,45 +444,6 @@ export default function OrgDashboardPage() {
           </div>
         </section>
       </div>
-      {showDeletedModal ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
-          <button
-            type="button"
-            aria-label="Close"
-            className="absolute inset-0 bg-black/60"
-            onClick={() => setShowDeletedModal(false)}
-          />
-          <div className="relative z-10 w-full max-w-[480px] bg-white border border-slate-200 rounded-3xl p-6 shadow-2xl">
-            <h3 className="text-lg font-bold mb-2">Organization deleted</h3>
-            <p className="text-sm text-slate-600 mb-4">
-              {deletedOrgName ? `"${deletedOrgName}" was deleted.` : 'The organization was deleted.'} Choose another
-              organization to continue.
-            </p>
-            <div className="space-y-2">
-              {orgs.map((item) => (
-                <button
-                  key={item.slug}
-                  type="button"
-                  className="w-full text-left px-4 py-3 rounded-2xl border border-slate-200 hover:bg-slate-50"
-                  onClick={() => {
-                    setShowDeletedModal(false);
-                    router.replace(`/${item.slug}`);
-                  }}
-                >
-                  {item.name ?? item.slug}
-                </button>
-              ))}
-              <button
-                type="button"
-                className="w-full text-left px-4 py-3 rounded-2xl border border-slate-200 hover:bg-slate-50 text-blue-600"
-                onClick={() => router.replace('/onboarding?newOrg=1')}
-              >
-                + Create new org
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
 
       {showDeleteConfirm ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
