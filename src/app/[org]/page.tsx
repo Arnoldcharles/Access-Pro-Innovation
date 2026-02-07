@@ -56,6 +56,16 @@ export default function OrgDashboardPage() {
   const [eventsUnsub, setEventsUnsub] = useState<null | (() => void)>(null);
   const [orgs, setOrgs] = useState<Array<{ slug: string; name?: string }>>([]);
   const [orgMenuOpen, setOrgMenuOpen] = useState(false);
+  const [showDeletedModal, setShowDeletedModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteInput, setDeleteInput] = useState('');
+
+  const deletedOrgName = useMemo(() => {
+    const slug = params?.org;
+    if (!slug) return '';
+    const parts = slug.split('=DELETED');
+    return parts.length > 1 ? parts[0] : '';
+  }, [params]);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -72,11 +82,15 @@ export default function OrgDashboardPage() {
 
       const orgSnap = await getDoc(doc(db, 'orgs', slug));
       if (!orgSnap.exists()) {
-        router.replace('/onboarding');
+        if (slug.includes('=DELETED')) {
+          setLoading(false);
+        } else {
+          router.replace('/onboarding');
+        }
         return;
       }
 
-      setOrg(orgSnap.data() as OrgData); 
+      setOrg(orgSnap.data() as OrgData);
 
       setLoading(false);
       setEventsLoading(true);
@@ -105,6 +119,13 @@ export default function OrgDashboardPage() {
           ...(docSnap.data() as object),
         })) as Array<{ slug: string; name?: string }>;
         setOrgs(items);
+        if (slug.includes('=DELETED')) {
+          if (items.length > 0) {
+            setShowDeletedModal(true);
+          } else {
+            router.replace('/onboarding');
+          }
+        }
       });
       return () => unsubOrgs();
     });
@@ -123,8 +144,15 @@ export default function OrgDashboardPage() {
     const orgSlug = params?.org;
     const currentUser = auth.currentUser;
     if (!orgSlug || !currentUser) return;
-    const confirmed = window.confirm('Delete this organization? This cannot be undone.');
-    if (!confirmed) return;
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeleteOrg = async () => {
+    const orgSlug = params?.org;
+    const currentUser = auth.currentUser;
+    if (!orgSlug || !currentUser) return;
+    const currentName = org?.name ?? orgSlug;
+    if (deleteInput.trim() !== currentName) return;
     const eventsSnap = await getDocs(collection(db, 'orgs', orgSlug, 'events'));
     for (const eventDoc of eventsSnap.docs) {
       const eventId = eventDoc.id;
@@ -139,8 +167,15 @@ export default function OrgDashboardPage() {
       await deleteDoc(eventDoc.ref);
     }
     await deleteDoc(doc(db, 'orgs', orgSlug));
-    await updateDoc(doc(db, 'users', currentUser.uid), { orgSlug: null, orgName: null });
-    router.replace('/onboarding');
+    const remainingOrgs = orgs.filter((item) => item.slug !== orgSlug);
+    if (remainingOrgs.length === 0) {
+      await updateDoc(doc(db, 'users', currentUser.uid), { orgSlug: null, orgName: null });
+      router.replace('/onboarding');
+      return;
+    }
+    router.replace(`/${orgSlug}=DELETED`);
+    setShowDeleteConfirm(false);
+    setDeleteInput('');
   };
 
   const handleDeleteEvent = async (eventId: string) => {
@@ -436,6 +471,92 @@ export default function OrgDashboardPage() {
           </div>
         </section>
       </div>
+      {showDeletedModal ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
+          <button
+            type="button"
+            aria-label="Close"
+            className="absolute inset-0 bg-black/60"
+            onClick={() => setShowDeletedModal(false)}
+          />
+          <div className="relative z-10 w-full max-w-[480px] bg-white border border-slate-200 rounded-3xl p-6 shadow-2xl">
+            <h3 className="text-lg font-bold mb-2">Organization deleted</h3>
+            <p className="text-sm text-slate-600 mb-4">
+              {deletedOrgName ? `"${deletedOrgName}" was deleted.` : 'The organization was deleted.'} Choose another
+              organization to continue.
+            </p>
+            <div className="space-y-2">
+              {orgs.map((item) => (
+                <button
+                  key={item.slug}
+                  type="button"
+                  className="w-full text-left px-4 py-3 rounded-2xl border border-slate-200 hover:bg-slate-50"
+                  onClick={() => {
+                    setShowDeletedModal(false);
+                    router.replace(`/${item.slug}`);
+                  }}
+                >
+                  {item.name ?? item.slug}
+                </button>
+              ))}
+              <button
+                type="button"
+                className="w-full text-left px-4 py-3 rounded-2xl border border-slate-200 hover:bg-slate-50 text-blue-600"
+                onClick={() => router.replace('/onboarding?newOrg=1')}
+              >
+                + Create new org
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {showDeleteConfirm ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
+          <button
+            type="button"
+            aria-label="Close"
+            className="absolute inset-0 bg-black/60"
+            onClick={() => {
+              setShowDeleteConfirm(false);
+              setDeleteInput('');
+            }}
+          />
+          <div className="relative z-10 w-full max-w-[480px] bg-white border border-slate-200 rounded-3xl p-6 shadow-2xl">
+            <h3 className="text-lg font-bold mb-2">Confirm delete</h3>
+            <p className="text-sm text-slate-600 mb-4">
+              Type <span className="font-semibold">{org?.name ?? params?.org}</span> to permanently delete this
+              organization.
+            </p>
+            <input
+              className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm"
+              placeholder="Organization name"
+              value={deleteInput}
+              onChange={(event) => setDeleteInput(event.target.value)}
+            />
+            <div className="mt-4 flex items-center gap-3">
+              <button
+                type="button"
+                className="px-4 py-2 rounded-2xl bg-slate-100 text-slate-700"
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  setDeleteInput('');
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="px-4 py-2 rounded-2xl bg-red-600 text-white disabled:opacity-40"
+                onClick={confirmDeleteOrg}
+                disabled={deleteInput.trim() !== (org?.name ?? params?.org)}
+              >
+                Delete org
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

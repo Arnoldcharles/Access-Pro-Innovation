@@ -44,6 +44,9 @@ type Guest = {
   name: string;
   phone: string;
   email: string;
+  status?: 'invited' | 'accepted' | 'declined';
+  checkedIn?: boolean;
+  checkedInAt?: string;
 };
 
 type InviteTarget = {
